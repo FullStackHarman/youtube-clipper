@@ -29,6 +29,8 @@ const VideoPlayer = forwardRef(function VideoPlayer({ videoId }, ref) {
             }
             playerRef.current = new window.YT.Player('yt-player', {
                 videoId: videoId,
+                width: '100%',
+                height: '100%',
                 playerVars: {
                     autoplay: 0,
                     modestbranding: 1,

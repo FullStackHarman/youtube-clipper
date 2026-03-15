@@ -42,7 +42,7 @@ export default function SegmentItem({
 
     return (
         <div
-            className={`segment-item slide-in ${isActive ? 'active' : ''}`}
+            className={`segment-item fade-in ${isActive ? 'active' : ''}`}
             onClick={() => onClick(index)}
             draggable
             onDragStart={(e) => onDragStart(e, index)}

@@ -27,18 +27,26 @@ export default function ProgressBar({ progress }) {
         overallPct = currentStepIndex * stepsWeight + (pct / 100) * stepsWeight;
     }
 
+    const renderStepIcon = (i, status) => {
+        if (status === 'completed') return '✓';
+        if (status === 'error') return '✕';
+        return i + 1;
+    };
+
     return (
         <div className="progress-container fade-in">
             <div className="progress-steps">
                 {STEPS.map((s, i) => {
                     let status = '';
-                    if (isError) status = 'error';
+                    if (isError && i === currentStepIndex) status = 'error';
                     else if (i < currentStepIndex || isDone) status = 'completed';
                     else if (i === currentStepIndex) status = 'active';
 
                     return (
                         <div key={s.key} className={`progress-step ${status}`}>
-                            <div className="progress-step-dot">{s.icon}</div>
+                            <div className="progress-step-dot">
+                                {renderStepIcon(i, status)}
+                            </div>
                             <span className="progress-step-label">{s.label}</span>
                         </div>
                     );
@@ -52,14 +60,14 @@ export default function ProgressBar({ progress }) {
                 />
             </div>
 
-            <p className={`progress-message ${isError ? 'progress-error' : ''}`}>
+            <p className={`progress-message ${isError ? 'progress-error' : ''}`} style={{ fontWeight: '500', letterSpacing: '0.2px' }}>
                 {message}
             </p>
 
             {isDone && (
-                <div style={{ textAlign: 'center', marginTop: '12px' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--success)' }}>
-                        Your video is ready! The download will start automatically.
+                <div className="fade-in" style={{ textAlign: 'center', marginTop: '16px', padding: '12px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--color-success)', fontWeight: '600' }}>
+                        Processing complete! Ready for download.
                     </span>
                 </div>
             )}

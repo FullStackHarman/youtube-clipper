@@ -17,6 +17,7 @@ export default function App() {
     const [segments, setSegments] = useState([]);
     const [activeSegmentIndex, setActiveSegmentIndex] = useState(-1);
     const [currentRange, setCurrentRange] = useState([0, 30]);
+    const [quality, setQuality] = useState('best');
     const [processing, setProcessing] = useState(false);
     const [progress, setProgress] = useState(null);
     const [toast, setToast] = useState(null);
@@ -131,6 +132,7 @@ export default function App() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     url: videoUrl,
+                    quality: quality,
                     segments: segments.map((s) => ({ start: s.start, end: s.end })),
                 }),
             });
@@ -241,7 +243,12 @@ export default function App() {
             <div className="main-content">
                 {/* ===== Left Panel ===== */}
                 <div className="left-panel">
-                    <VideoInput onLoadVideo={handleLoadVideo} isLoading={isLoading} />
+                    <VideoInput 
+                        onLoadVideo={handleLoadVideo} 
+                        isLoading={isLoading} 
+                        quality={quality}
+                        onQualityChange={setQuality}
+                    />
 
                     <VideoPlayer ref={playerRef} videoId={videoId} />
 
@@ -290,7 +297,7 @@ export default function App() {
                                         : undefined,
                                 }}
                             >
-                                {processing ? '⏳ Processing...' : `⬇️ Download ${segments.length > 0 ? `(${segments.length} clips)` : ''}`}
+                                {processing ? 'Processing...' : `⬇️ Download ${segments.length > 0 ? `(${segments.length} clips)` : ''}`}
                             </button>
 
                             {segments.length > 0 && (

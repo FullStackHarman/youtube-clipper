@@ -55,8 +55,12 @@ app.post('/api/metadata', metadataLimiter, async (req, res) => {
 
         res.json(metadata);
     } catch (err) {
-        console.error('Metadata error:', err.message);
-        res.status(500).json({ error: 'Failed to fetch video metadata. Please check the URL.' });
+        console.error('Metadata error for URL:', req.body.url);
+        console.error('Error detail:', err.message);
+        res.status(500).json({ 
+            error: 'Failed to fetch video metadata.',
+            details: err.message
+        });
     }
 });
 
@@ -109,9 +113,10 @@ app.post('/api/process', processLimiter, async (req, res) => {
     try {
         // Step 1: Download video
         updateProgress(jobId, 'downloading', 0, 'Starting video download...');
+        const { quality } = req.body;
         const videoBasePath = path.join(jobDir, 'source');
-        const videoPath = await downloadVideo(url, videoBasePath, (pct) => {
-            updateProgress(jobId, 'downloading', Math.round(pct), `Downloading video... ${Math.round(pct)}%`);
+        const videoPath = await downloadVideo(url, videoBasePath, quality, (pct) => {
+            updateProgress(jobId, 'downloading', Math.round(pct), `Downloading video (${quality || 'best'})... ${Math.round(pct)}%`);
         });
         updateProgress(jobId, 'downloading', 100, 'Download complete');
 
