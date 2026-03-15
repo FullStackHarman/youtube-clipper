@@ -44,13 +44,19 @@ export default function App() {
                 body: JSON.stringify({ url }),
             });
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Failed to load video');
-
-            setVideoUrl(url);
-            setVideoInfo(data);
-            setCurrentRange([0, Math.min(30, data.duration)]);
-            showToast(`Loaded: ${data.title}`);
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to load video');
+                setVideoUrl(url);
+                setVideoInfo(data);
+                setCurrentRange([0, Math.min(30, data.duration)]);
+                showToast(`Loaded: ${data.title}`);
+            } else {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                throw new Error(`Server returned non-JSON response. Is the backend running? (Status: ${res.status})`);
+            }
         } catch (err) {
             showToast(err.message, 'error');
         } finally {
@@ -137,7 +143,16 @@ export default function App() {
                 }),
             });
 
-            const data = await res.json();
+            const contentType = res.headers.get('content-type');
+            let data;
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                throw new Error(`Server error: received HTML/text instead of JSON. (Status: ${res.status})`);
+            }
+
             if (!res.ok) throw new Error(data.error || 'Processing failed');
 
             const { jobId } = data;
