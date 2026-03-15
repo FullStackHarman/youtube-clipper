@@ -228,6 +228,12 @@ export default function App() {
 
     const videoId = videoInfo ? extractVideoId(videoUrl) : null;
 
+    const handleSliderSlide = useCallback((time) => {
+        if (playerRef.current) {
+            playerRef.current.seekTo(time);
+        }
+    }, []);
+
     return (
         <div className="app-container">
             <Header />
@@ -255,6 +261,7 @@ export default function App() {
                             currentRange={currentRange}
                             onRangeChange={setCurrentRange}
                             segments={segments}
+                            onSlide={handleSliderSlide}
                         />
                     )}
 

@@ -8,6 +8,7 @@ export default function TimelineSlider({
     currentRange,
     onRangeChange,
     segments,
+    onSlide,
 }) {
     const sliderRef = useRef(null);
     const sliderInstance = useRef(null);
@@ -44,6 +45,12 @@ export default function TimelineSlider({
 
         slider.on('update', (values) => {
             onRangeChange([parseFloat(values[0]), parseFloat(values[1])]);
+        });
+
+        slider.on('slide', (values, handle) => {
+            if (onSlide) {
+                onSlide(parseFloat(values[handle]));
+            }
         });
 
         sliderInstance.current = slider;
